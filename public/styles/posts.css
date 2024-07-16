@@ -1,0 +1,35 @@
+.posts .title {
+  margin-bottom: 40px;
+}
+
+
+.posts .container a{
+  text-decoration: none;
+}
+
+.posts .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: .2s;
+}
+
+.posts .card:hover{
+  background-color: #758fd823;
+}
+
+.posts .card-img-container {
+  flex: 1;
+}
+
+.posts .card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.posts .card-image {
+  object-fit: cover;
+  height: 400px; /* Adjust as needed for uniform image height */
+  width: 100%;
+}

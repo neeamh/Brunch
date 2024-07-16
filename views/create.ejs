@@ -1,0 +1,23 @@
+<%- include("partials/head.ejs") %>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="title">
+                <h1>Tell us your story!</h1>
+            </div>
+            <div class="row">
+                <form action="/submit" method="POST" enctype="multipart/form-data">
+                    <div class="custom-file-input">
+                        <input class="input file" type="file" name="img" id="img" style="display: none;">
+                        <label for="img" class="custom-file-label">Upload Image</label>
+                    </div>
+                    <input class="input title" type="text" name="title" placeholder="Title" required maxlength="30">
+                    <textarea class="input body" name="body" placeholder="Write here" rows="10" required></textarea>
+                    <input type="submit" value="Post">
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

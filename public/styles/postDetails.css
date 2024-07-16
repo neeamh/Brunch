@@ -1,0 +1,26 @@
+.pstdtl .card {
+    margin-top: 20px;
+}
+
+.pstdtl .card-img-top {
+    width: 100%;
+    height: auto;
+}
+
+.pstdtl .card-body {
+    padding: 20px;
+}
+
+.pstdtl .card-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.pstdtl .card-text {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.pstdtl .text-muted {
+    color: #6c757d !important;
+}

@@ -1,0 +1,20 @@
+<%- include("partials/head.ejs") %>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="title">
+        <h1>Edit Your Post</h1>
+      </div>
+      <div class="row">
+        <form action="/edit/<%= post.id %>?_method=PATCH" method="POST" enctype="multipart/form-data">
+          <input class="input file" type="file" name="img">
+          <input class="input title" type="text" name="title" placeholder="Title" value="<%= post.title %>" required maxlength="50">
+          <textarea class="input body" name="body" placeholder="Write here" rows="10" required><%= post.body %></textarea>
+          <input type="submit" value="Update Post">
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
