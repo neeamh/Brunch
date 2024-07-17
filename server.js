@@ -32,11 +32,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.get("/", (req, res) => {
-  const postsArray = Array.from(allPosts.entries());
-  const postsWithImages = postsArray.filter(([id, post]) => post.img);
-  const firstThreeEntries = postsWithImages.slice(Math.max(postsWithImages.length - 3, 0));
-  res.render('home', { firstThree: firstThreeEntries});
+  const lastTenEntries = Array.from(allPosts.entries()).slice(-10);
+  const postsWithImages = lastTenEntries.filter(([key, post]) => post.img);
+  const mostClickedPosts = postsWithImages.sort((a, b) => b[1].clickCount - a[1].clickCount).slice(0, 3);
+  
+  res.render('home', { firstThree: mostClickedPosts });
 });
+
 app.get("/posts", (req, res) => {
   res.render('posts', { allPages: Array.from(allPosts.values()) });
 });
@@ -48,6 +50,8 @@ app.get("/create", (req, res) => {
 app.get("/posts/:id", (req, res) => {
   const post = allPosts.get(parseInt(req.params.id));
   if (post) {
+    post.clickCount = (post.clickCount || 0) + 1;  // Increment click count
+    allPosts.set(post.id, post);  // Save the updated post back to the map
     res.render('postDetail', { post });
   } else {
     res.status(404).send('Post not found');
@@ -66,12 +70,14 @@ app.get("/edit/:id", (req, res) => {
 app.patch("/edit/:id", upload.single('img'), (req, res) => {
   const id = parseInt(req.params.id);
   if (allPosts.has(id)) {
+    const existingPost = allPosts.get(id);
     const updatedPost = {
       id: id,
       title: req.body.title,
       body: req.body.body,
-      img: req.file ? '/uploads/' + req.file.filename : allPosts.get(id).img,
-      updatedAt: new Date().toLocaleString()
+      img: req.file ? '/uploads/' + req.file.filename : existingPost.img,
+      updatedAt: new Date().toLocaleString(),
+      clickCount: existingPost.clickCount  // Preserve the click count
     };
     allPosts.set(id, updatedPost);
   }
@@ -94,7 +100,8 @@ function newPost(req, res, next) {
     title: req.body.title,
     body: req.body.body,
     img: req.file ? '/uploads/' + req.file.filename : null,
-    updatedAt: new Date().toLocaleString()
+    updatedAt: new Date().toLocaleString(),
+    clickCount: 0  // Initialize click count
   };
   allPosts.set(id_counter, newPost);
   next();

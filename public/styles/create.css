@@ -1,24 +1,24 @@
-form {
+.create form {
     display: flex;
     flex-direction: column;
     gap: 10px; /* Adds spacing between the elements */
 }
 
-.title h1 {
+.create .title h1 {
     margin-bottom: 40px;
 }
 
-textarea,
-input {
+.create textarea,
+.create input {
     margin-bottom: 15px;
 }
 
-textarea {
+.create .input.body {
     resize: none;
-    height: 1000px;
+    height: 2000px;
     width: 100%;
 }
-.input.file{
+.create .input.file{
     align-self: flex-start; /* Aligns the submit button to the start */
     padding: 10px ;
     height: 300px; width: 300px;
@@ -31,21 +31,21 @@ textarea {
     position: relative;
     
 }
-.input.title {
+.create .input.title {
     width: 100%;
     padding: 10px;
     box-sizing: border-box; /* Ensures padding is included in the width */
 
 }
 
-.input.body {
+.create .input.body {
     width: 100%;
     height: 100px; /* Adjust height as needed */
     padding: 10px;
     box-sizing: border-box; /* Ensures padding is included in the width */
 }
 
-input[type="submit"] {
+.create input[type="submit"] {
     align-self: flex-start; /* Aligns the submit button to the start */
     padding: 15px 30px;
     background-color: #0d6efd;
@@ -59,17 +59,17 @@ input[type="submit"] {
     width: 100%;
 }
 
-input[type="submit"]:hover {
+.create input[type="submit"]:hover {
     background-color: #79acf8; /* Changes the button color on hover */
 }
 
-.custom-file-input {
+.create .custom-file-input {
     display: flex;
     align-items: center;
     margin-bottom: 15px;
 }
 
-.custom-file-label {
+.create .custom-file-label {
     display: inline-block;
     padding: 6px 12px;
     cursor: pointer;
@@ -81,6 +81,6 @@ input[type="submit"]:hover {
     height: 200px; width: 200px;
 }
 
-.custom-file-label:hover {
+.create .custom-file-label:hover {
     background-color: #4b50554d;
 }
