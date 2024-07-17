@@ -35,7 +35,7 @@ app.get("/", (req, res) => {
   const postsArray = Array.from(allPosts.entries());
   const postsWithImages = postsArray.filter(([id, post]) => post.img);
   const firstThreeEntries = postsWithImages.slice(Math.max(postsWithImages.length - 3, 0));
-  res.render('home', { firstThree: firstThreeEntries });
+  res.render('home', { firstThree: firstThreeEntries});
 });
 app.get("/posts", (req, res) => {
   res.render('posts', { allPages: Array.from(allPosts.values()) });
