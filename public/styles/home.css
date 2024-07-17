@@ -1,3 +1,44 @@
+.home .carousel {
+    margin-top: 50px;
+    max-height: 700px; /* Set your desired height */
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0px 0px 8px  rgba(91, 154, 212, 0.397);
 
 
+  }
 
+.home .carousel-inner img {
+    object-fit: cover; /* Ensures the image covers the carousel area */
+    max-height: 700px;
+    width: 100%;
+    
+
+}
+
+.carousel-caption {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)) ;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(50px) ;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    position: absolute;
+
+
+    left: 5%;
+    padding: 1rem;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    max-width: 500px ;
+}
+
+.home .carousel-item {
+    height: 100%;
+    overflow: hidden;
+    
+}
+
+.home .carousel-inner {
+    max-height: 700px;   
+    
+}

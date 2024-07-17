@@ -1,19 +1,64 @@
 <%- include("partials/head.ejs") %>
+
 <html>
-<body>
+<body class="home">
   <div class="container">
-    <div class="row">
-      <h1>Enjoy your Brunch!</h1>
+    <div id="carouselExampleCaptions" class="carousel slide">
+      <div class="carousel-indicators">
+        <% firstThree.forEach((post, index) => { %>
+          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="<%= index %>" class="<%= index === 0 ? 'active' : '' %>" aria-current="<%= index === 0 ? 'true' : '' %>" aria-label="Slide <%= index + 1 %>"></button>
+        <% }) %>
+      </div>
+      <div class="carousel-inner">
+        <% firstThree.forEach((post, index) => { %>
+          <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+            <div class="carousel-caption d-block">
+              <h4 class="carousel-title"><%= post[1].title.length >= 30 ? post[1].title.slice(0, 27) + "..." : post[1].title %></h5>
+              <h5><%= post[1].body.length > 100 ? post[1].body.slice(0, 100) + "..." : post[1].body %></p>
+            </div>
+            <img src="<%= post[1].img %>" class="d-block w-100" alt="...">
+          </div>
+        <% }) %>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
     </div>
-    <div class="row">
-      <h3>Whats new:</h3>
-    </div>
+  
 
   </div>
   
+  <script>
+    function truncateText(selector, maxLength) {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(el => {
+        if (el.innerText.length > maxLength) {
+          el.innerText = el.innerText.slice(0, maxLength) + '...';
+        }
+      });
+    }
 
+    function adjustTextLength() {
+      const width = window.innerWidth;
+      if (width < 1200) {
+        truncateText('.carousel-title', 30);
+      } else if (width < 768) {
+        truncateText('.carousel-title', 50);
+      } else if (width < 992) {
+        truncateText('.carousel-title', 70);
+      } else {
+        truncateText('.carousel-title', 100);
+      }
+    }
 
+    window.addEventListener('resize', adjustTextLength);
+    document.addEventListener('DOMContentLoaded', adjustTextLength);
+  </script>
   <%- include("partials/boot_script_cdn.ejs") %>
 </body>
 </html>
-
