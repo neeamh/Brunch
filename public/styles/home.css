@@ -39,7 +39,7 @@
     backdrop-filter: blur(50px);
     -webkit-backdrop-filter: blur(50px) ;
     box-shadow: 0 8px 50px 5px rgba(0, 0, 0, 0.562);
-    transform: scale(1.01); 
+    transform: scale(1.08); 
 
 }
 
@@ -68,3 +68,58 @@
     max-height: 700px;   
     
 }
+
+
+.home .heading * {
+    font-family: "Poppins", sans-serif;
+    margin-top: 15px;
+}
+
+.home .heading .title {
+    font-family: "Playwrite CZ", cursive;
+    background-image: linear-gradient(90deg, #f8a342, #f76f57);
+    background-clip: text;
+    color: transparent;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.home .heading .btn {
+    padding: 10px 20px;
+    background: linear-gradient(90deg, #f8a342, #ff6017);
+    color: white;
+    font-family: "Poppins", sans-serif;
+    font-stretch: wider;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    border-radius: 12px;
+    align-items: end;
+    transition: background-image 2s; /* Specify the property to transition */
+}
+
+.home .whats-new {
+    font-family: "Poppins", sans-serif;
+}
+
+.home .whats-new a{
+    text-decoration: none;
+}
+
+.home .whats-new img {
+    height: 100%;
+    max-height: 200px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.home .whats-new .card-body:hover {
+    transition: .2s;
+    background-color: #7a56413d;
+}
+/* 
+@media (max-width: 415px) {
+    .home .whats-new .card {
+        height: 300px;
+    }
+} */

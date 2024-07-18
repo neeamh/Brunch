@@ -31,12 +31,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.get("/", (req, res) => {
-  const lastTenEntries = Array.from(allPosts.entries()).slice(-10);
-  const postsWithImages = lastTenEntries.filter(([key, post]) => post.img);
-  const mostClickedPosts = postsWithImages.sort((a, b) => b[1].clickCount - a[1].clickCount).slice(0, 3);
-  
-  res.render('home', { firstThree: mostClickedPosts });
+  const firstThreeEntries = Array.from(allPosts.entries())
+    .sort((a, b) => b[1].clickCount - a[1].clickCount) // sort by click count
+    .slice(0, 3);
+  const recentPosts = Array.from(allPosts.values()).slice(-10).reverse(); // get the last 10 posts
+  res.render('home', { firstThree: firstThreeEntries, recentPosts });
 });
+
 
 app.get("/posts", (req, res) => {
   res.render('posts', { allPages: Array.from(allPosts.values()) });

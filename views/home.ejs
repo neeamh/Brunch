@@ -1,6 +1,6 @@
 <%- include("partials/head.ejs") %>
 
-<html >
+<html>
 <body class="home">
   <div class="container">
     <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
@@ -31,19 +31,41 @@
         <span class="visually-hidden">Next</span>
       </button>
     </div>
-    <div class="row">
+    <div class="row my-4 heading">
       <div class="col">
-        <h1 class="title">Whats New</h1>
+        <h1 class="title">What's New</h1>
       </div>
-      <div class="col">
+      <div class="col text-end">
         <a class="view-all" href="/posts">
-          <button>View All</button>
+          <button class="btn btn-primary"><span>View All</span></button>
         </a>
       </div>
+    </div>
+    <div class="row whats-new">
+      <% recentPosts.forEach((post) => { %>
+        <div class="col-12 col-md-6 mb-3">
+          <a href="/posts/<%= post.id %>" class="text-decoration-none">
+            <div class="card h-100" style="background-color: rgba(255, 255, 255, 0.8); border: none;">
+              <div class="row g-0 h-100">
+                <div class="col-md-4 h-100">
+                  <img src="<%= post.img %>" class="img-fluid rounded-start h-100" alt="...">
+                </div>
+                <div class="col-md-8 d-flex flex-column">
+                  <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                      <h5 class="card-title"><%= post.title.length >= 30 ? post.title.slice(0, 27) + "..." : post.title %></h5>
+                      <p class="card-text"><%= post.body.length > 100 ? post.body.slice(0, 100) + "..." : post.body %></p>
+                    </div>
+                    <p class="card-text mt-auto"><small class="text-muted">Last updated: <%= post.updatedAt %></small></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      <% }) %>
     </div>
   </div>
   <%- include("partials/boot_script_cdn.ejs") %>
 </body>
 </html>
-
-
