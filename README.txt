@@ -17,6 +17,12 @@ Technologies Used
 -Multer (for file uploads)
 -Method-override (to support PUT and DELETE methods)
 
+Colors
+Background:                        #faecd5
+Logo/Page-hedadings:               #f8a342 -> #f76f57
+nav-bar buttons:                   #ff6017
+home-carousel caption/Post Button: #f8a342 -> #ff6017
+
 To be developed
 -More consistent styling
 -An orange/red/yellow theme

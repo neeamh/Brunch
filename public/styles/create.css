@@ -1,3 +1,5 @@
+
+
 .create form {
     display: flex;
     flex-direction: column;
@@ -5,7 +7,14 @@
 }
 
 .create .title h1 {
-    margin-bottom: 40px;
+    font-family: "Playwrite CZ", cursive;
+    background-image: linear-gradient(90deg, #f8a342, #f76f57);
+    background-clip: text;
+    color: transparent;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 30px;
+    height: 70px;
 }
 
 .create textarea,
@@ -18,24 +27,12 @@
     height: 2000px;
     width: 100%;
 }
-.create .input.file{
-    align-self: flex-start; /* Aligns the submit button to the start */
-    padding: 10px ;
-    height: 300px; width: 300px;
-    background-color: #161616;
-    color: white;
-    border: dashed #79acf8 2px;
-    cursor: pointer;
-    border-radius: 12px;
-    transition: .2s;
-    position: relative;
-    
-}
+
 .create .input.title {
     width: 100%;
     padding: 10px;
     box-sizing: border-box; /* Ensures padding is included in the width */
-
+    font-family: "Poppins", sans-serif;
 }
 
 .create .input.body {
@@ -43,24 +40,28 @@
     height: 100px; /* Adjust height as needed */
     padding: 10px;
     box-sizing: border-box; /* Ensures padding is included in the width */
+    font-family: "Poppins", sans-serif;
 }
 
 .create input[type="submit"] {
     align-self: flex-start; /* Aligns the submit button to the start */
     padding: 15px 30px;
-    background-color: #0d6efd;
+    background-image: linear-gradient(90deg, #f8a342, #ff6017);
     color: white;
+    font-family: "Playwrite CZ", cursive;
     font-stretch:wider;
     font-weight: bold;
     border: none;
     cursor: pointer;
     border-radius: 12px;
-    transition: .2s;
+    
     width: 100%;
 }
 
+
 .create input[type="submit"]:hover {
-    background-color: #79acf8; /* Changes the button color on hover */
+    transition: .3s;
+    background-image: linear-gradient(90deg, rgba(248, 163, 66, 0.521), rgba(255, 110, 42, 0.521)); /* Changes the button color on hover */
 }
 
 .create .custom-file-input {
@@ -73,8 +74,8 @@
     display: inline-block;
     padding: 6px 12px;
     cursor: pointer;
-    background-color: #161616;
-    border: 2px dashed #79acf8;
+    background-color: #492b1ad2;
+    border: 4px dashed #ff8f62;
     color: rgba(255, 255, 255, 0);
     border-radius: 4px;
     transition: .2s;
