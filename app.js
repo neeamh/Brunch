@@ -111,7 +111,6 @@ app.post("/submit", upload.single('img'), newPost, (req, res) => {
 });
 
 
-
 // Function to initialize posts 
 // SOLELY FOR TESTING PURPOSES
 //ALL IMAGES ARE IN /public/uploads

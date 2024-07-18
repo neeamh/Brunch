@@ -5,11 +5,11 @@ $(document).ready(function() {
   function setActiveNavLink() {
     const currentPath = window.location.pathname;
     $('.nav-link').each(function() {
-      const linkPath = $(this).attr('href');
+      const linkPath = $(`${this} a`).attr('href');
       if (currentPath === linkPath) {
-        $(this).addClass('active');
+        $(`${this} a`).addClass('btn-active');
       } else {
-        $(this).removeClass('active');
+        $(`${this} a`).removeClass('bnt-active');
       }
     });
   }
@@ -18,8 +18,8 @@ $(document).ready(function() {
   setActiveNavLink();
 
   // Update active class on link click
-  $('.nav-link').click(function() {
-    $('.nav-link.active').removeClass('active');
-    $(this).addClass('active');
+  $(`.nav-link`).click(function() {
+    $(`.nav-link .btn-active`).removeClass('btn-active');
+    $(`${this} a`).addClass('btn-active');
   });
 });
