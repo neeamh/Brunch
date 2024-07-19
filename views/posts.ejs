@@ -1,4 +1,4 @@
-<%- include("partials/head.ejs") %>
+<%- include("partials/header.ejs") %>
 
 <html>
 <body class="posts">
@@ -29,27 +29,6 @@
       <% }) %>
     </div>
   </div>
-
-  <style>
-    .card-title, .card-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .card-text {
-      margin-bottom: 30px;
-    }
-
-    .card-body {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .mt-auto {
-      margin-top: auto;
-    }
-  </style>
 </body>
 </html>
+<%- include("partials/footer.ejs") %>
