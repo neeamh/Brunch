@@ -40,7 +40,8 @@ app.get("/", (req, res) => {
 
 
 app.get("/posts", (req, res) => {
-  res.render('posts', { allPages: Array.from(allPosts.values()) });
+  const sortedPosts = Array.from(allPosts.values()).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+  res.render('posts', { allPages: sortedPosts });
 });
 
 app.get("/create", (req, res) => {
