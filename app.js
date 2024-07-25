@@ -1,12 +1,20 @@
 import express from "express";
 import bodyParser from "body-parser";
 import multer from "multer";
+import axios from 'axios';
 import methodOverride from "method-override";
+import dotenv from 'dotenv';
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
+dotenv.config();
+
+console.log(process.env)
+
+const FINNHUB_API_KEY = process.env.API_KEY;
+console.log('FINNHUB_API_KEY:', process.env.API_KEY); // Verify the API key
 
 let allPosts = new Map();
 let id_counter = 0;
@@ -30,12 +38,44 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.get("/", (req, res) => {
-  const firstThreeEntries = Array.from(allPosts.entries())
-    .sort((a, b) => b[1].clickCount - a[1].clickCount) // sort by click count
-    .slice(0, 3);
-  const recentPosts = Array.from(allPosts.values()).slice(-10).reverse(); // get the last 10 posts
-  res.render('home', { firstThree: firstThreeEntries, recentPosts });
+app.get("/", async (req, res) => {
+  try {
+    const response = await axios.get(`https://finnhub.io/api/v1/stock/symbol`, {
+      params: {
+        exchange: 'US',
+        token: FINNHUB_API_KEY
+      }
+    });
+
+    const popularSymbols = response.data.slice(0, 15).map(stock => stock.symbol); // Get top 10 stocks
+
+    const stockDataPromises = popularSymbols.map(symbol =>
+      axios.get(`https://finnhub.io/api/v1/quote`, {
+        params: {
+          symbol: symbol,
+          token: FINNHUB_API_KEY
+        }
+      })
+    );
+
+    const stockDataResponses = await Promise.all(stockDataPromises);
+
+    const stockData = stockDataResponses.map((response, index) => ({
+      symbol: popularSymbols[index],
+      price: response.data.c,
+      change: response.data.d
+    }));
+    
+    const firstThreeEntries = Array.from(allPosts.entries())
+      .sort((a, b) => b[1].clickCount - a[1].clickCount) // sort by click count
+      .slice(0, 3);
+    const recentPosts = Array.from(allPosts.values()).slice(-10).reverse(); // get the last 10 posts
+
+    res.render('home', { firstThree: firstThreeEntries, recentPosts, stockData });
+  } catch (error) {
+    console.error("Error fetching stock data:", error);
+    res.status(500).send("Error fetching stock data");
+  }
 });
 
 

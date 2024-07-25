@@ -97,13 +97,6 @@
     text-decoration: none;
 }
 
-.home .whats-new .card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
-    border: none;
-}
 
 .home .whats-new .card .row {
     flex: 1;
@@ -146,6 +139,67 @@
     transition: .2s;
     background-color: #7a56413d;
     border-radius: 8px;
+}
+
+
+
+/* All other things being the same, change these rules:*/
+.home #container {
+    width: 100%;
+    height: 2.8rem;
+    font-family: "Poppins", sans-serif;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    background: rgba(0, 0, 0, 0);
+    color: #fff;
+}
+
+:root {
+    --scroll-duration: 50s;
+}
+
+.home #container .scroll {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: max-content; /* Adjust to fit the content */
+    white-space: nowrap;
+    animation: loop var(--scroll-duration) linear infinite;
+}
+
+@keyframes loop {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0%); }
+}
+
+
+.home .item {
+    display: flex;
+    align-items: center;
+    gap: 0 1rem;
+    color: #e2e8f0;
+    font-size: .9rem;
+    background-color: #152c41;
+    padding: 0.7rem 1rem;
+    margin: 0rem 2rem;
+    border-radius: 0.4rem;
+    white-space: nowrap;
+}
+
+.home .fa-caret-down,
+.home .fa-caret-up,
+.home .fa-minus {
+    margin-right: 5px;
+}
+
+.home .hover-scroll {
+    position: fixed;
+    background-color: none;
+    height: 45px; width: 10%;
+    z-index: 10;
+    right: 0px;
+    animation-duration: var(--scroll-duration);
 }
 
 @media (max-width: 576px) {

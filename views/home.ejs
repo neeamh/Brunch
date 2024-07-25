@@ -2,6 +2,28 @@
 
 <html>
 <body class="home">
+<div id='container'>
+  <div class="hover-scroll"></div>
+  <div class='scroll' id='scroll-one'>
+    <% for (var loop = 0; loop <= 3; loop++) {%>
+      <% stockData.forEach(stock => { %>
+        <div class="item">
+          <% if (stock.change < 0 ) {%>
+            <div class="stock-symbol"><%= stock.symbol %></div>
+            <div class="stock-price" style="color: #ff6f6f;"><i class="fa-solid fa-caret-down"></i>$<%= stock.price.toFixed(2) %></div>
+          <% } else if (stock.change > 0) { %>
+            <div class="stock-symbol"><%= stock.symbol %></div>
+            <div class="stock-price" style="color: #7dff7d;"><i class="fa-solid fa-caret-up"></i>$<%= stock.price.toFixed(2) %></div>
+          <% } else { %>
+            <div class="stock-symbol"><%= stock.symbol %></div>
+            <div class="stock-price" style="color: #c7c7c7b7;"><i class="fa-solid fa-minus"></i>$<%= stock.price.toFixed(2) %></div>
+          <% } %>
+            
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</div>
   <div class="container">
     <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-indicators">
@@ -45,7 +67,7 @@
       <% recentPosts.forEach((post) => { %>
         <div class="col-12 col-xl-6 mb-3">
           <a href="/posts/<%= post.id %>" class="text-decoration-none">
-            <div class="card" style="background-color: rgba(255, 255, 255, 0.8); border: none;">
+            <div class="card">
               <div class="row g-0">
                 <div class="col-md-4">
                   <img src="<%= post.img %>" class="img-fluid rounded-top" alt="...">
@@ -66,5 +88,7 @@
   </div>
   <%- include ("partials/footer.ejs") %>
   <%- include("partials/boot_script_cdn.ejs") %>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="/script/home.js"></script>
 </body>
 </html>
