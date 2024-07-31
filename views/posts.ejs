@@ -9,16 +9,19 @@
         <div class="col">
           <a href="/posts/<%= post.id %>" class="text-decoration-none">
             <div class="card shadow-sm h-100">
-              <% if(post.img) { %>
-                <img class="card-image img-fluid rounded-top" src="<%= post.img %>" alt="...">
+              <% if (post.img) { %>
+                <img class="card-image img-fluid rounded-top" src="data:<%= post.img_mime_type %>;base64,<%= post.img %>" alt="...">
               <% } %>
               <div class="card-body d-flex flex-column">
                 <h5 class="card-title text-truncate"><%= post.title %></h5>
                 <p class="card-text text-truncate"><%= post.body %></p>
-                <div class="mt-auto">
-                  <p class="card-text">
-                    <small class="card-time text-body-secondary"><%= post.updatedAt %></small>
-                  </p>
+                <div class="mt-auto d-flex align-items-center">
+                  <% if (post.profile_pic) { %>
+                    <img src="data:<%= post.profile_pic_mime %>;base64,<%= post.profile_pic %>" alt="Profile Picture" class="rounded-circle" style="width: 30px; height: 30px; margin-right: 10px;">
+                  <% } else { %>
+                    <img src="/public/assets/default-profile.png" alt="Default Profile Picture" class="rounded-circle" style="width: 30px; height: 30px; margin-right: 10px;">
+                  <% } %>
+                  <p class="card-text mb-0"><%= post.username %></p>
                 </div>
               </div>
             </div>
@@ -27,6 +30,10 @@
       <% }) %>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
 <%- include("partials/footer.ejs") %>
+
+

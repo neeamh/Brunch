@@ -2,28 +2,27 @@
 
 <html>
 <body class="home">
-<div id='container'>
-  <div class="hover-scroll"></div>
-  <div class='scroll' id='scroll-one'>
-    <% for (var loop = 0; loop <= 3; loop++) {%>
-      <% stockData.forEach(stock => { %>
-        <div class="item">
-          <% if (stock.change < 0 ) {%>
-            <div class="stock-symbol"><%= stock.symbol %></div>
-            <div class="stock-price" style="color: #ff6f6f;"><i class="fa-solid fa-caret-down"></i>$<%= stock.price.toFixed(2) %></div>
-          <% } else if (stock.change > 0) { %>
-            <div class="stock-symbol"><%= stock.symbol %></div>
-            <div class="stock-price" style="color: #7dff7d;"><i class="fa-solid fa-caret-up"></i>$<%= stock.price.toFixed(2) %></div>
-          <% } else { %>
-            <div class="stock-symbol"><%= stock.symbol %></div>
-            <div class="stock-price" style="color: #c7c7c7b7;"><i class="fa-solid fa-minus"></i>$<%= stock.price.toFixed(2) %></div>
-          <% } %>
-            
-        </div>
-      <% }) %>
-    <% } %>
+  <div id='container'>
+    <div class="hover-scroll"></div>
+    <div class='scroll' id='scroll-one'>
+      <% for (var loop = 0; loop <= 3; loop++) {%>
+        <% stockData.forEach(stock => { %>
+          <div class="item">
+            <% if (stock.change < 0 ) { %>
+              <div class="stock-symbol"><%= stock.symbol %></div>
+              <div class="stock-price" style="color: #ff6f6f;"><i class="fa-solid fa-caret-down"></i>$<%= stock.price.toFixed(2) %></div>
+            <% } else if (stock.change > 0) { %>
+              <div class="stock-symbol"><%= stock.symbol %></div>
+              <div class="stock-price" style="color: #7dff7d;"><i class="fa-solid fa-caret-up"></i>$<%= stock.price.toFixed(2) %></div>
+            <% } else { %>
+              <div class="stock-symbol"><%= stock.symbol %></div>
+              <div class="stock-price" style="color: #c7c7c7b7;"><i class="fa-solid fa-minus"></i>$<%= stock.price.toFixed(2) %></div>
+            <% } %>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
   </div>
-</div>
   <div class="container">
     <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-indicators">
@@ -33,17 +32,15 @@
       </div>
       <div class="carousel-inner">
         <% firstThree.forEach((post, index) => { %>
-          <% if (post[1]) { %>
-            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-              <a href="/posts/<%= post[1].id %>" class="text-white text-decoration-none">
-                <div class="carousel-caption d-block">
-                  <h4 class="carousel-title"><%= post[1].title.length >= 30 ? post[1].title.slice(0, 27) + "..." : post[1].title %></h5>
-                  <h5 class="carousel-body"><%= post[1].body.length > 100 ? post[1].body.slice(0, 100) + "..." : post[1].body %></p>
-                </div>
-              </a>
-              <img src="<%= post[1].img %>" class="d-block w-100" alt="...">
-            </div>
-          <% } %>
+          <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+            <a href="/posts/<%= post.id %>" class="text-white text-decoration-none">
+              <div class="carousel-caption d-block">
+                <h4 class="carousel-title"><%= post.title.length >= 30 ? post.title.slice(0, 27) + "..." : post.title %></h5>
+                <h5 class="carousel-body"><%= post.body.length > 100 ? post.body.slice(0, 100) + "..." : post.body %></p>
+              </div>
+            </a>
+            <img src="data:<%= post.img_mime_type %>;base64,<%= post.img %>" class="d-block w-100" alt="...">
+          </div>
         <% }) %>
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
@@ -70,13 +67,20 @@
             <div class="card">
               <div class="row g-0">
                 <div class="col-md-4">
-                  <img src="<%= post.img %>" class="img-fluid rounded-top" alt="...">
+                  <img src="data:<%= post.img_mime_type %>;base64,<%= post.img %>" class="img-fluid rounded-top" alt="...">
                 </div>
                 <div class="col-md-8">
                   <div class="card-body">
                     <h5 class="card-title"><%= post.title.length >= 30 ? post.title.slice(0, 27) + "..." : post.title %></h5>
                     <p class="card-text"><%= post.body.length > 100 ? post.body.slice(0, 100) + "..." : post.body %></p>
-                    <p class="card-text"><small class="text-muted">Last updated: <%= post.updatedAt %></small></p>
+                    <div class="mt-auto d-flex align-items-center">
+                      <% if (post.profile_pic) { %>
+                        <img src="data:<%= post.profile_pic_mime %>;base64,<%= post.profile_pic %>" alt="Profile Picture" class="rounded-circle" style="width: 30px; height: 30px; margin-right: 10px;">
+                      <% } else { %>
+                        <img src="/path/to/default/profile/pic.jpg" alt="Default Profile Picture" class="rounded-circle" style="width: 30px; height: 30px; margin-right: 10px;">
+                      <% } %>
+                      <p class="card-text mb-0"><%= post.username %></p>
+                    </div>
                   </div>
                 </div>
               </div>

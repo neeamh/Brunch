@@ -6,8 +6,8 @@
     <div class="row">
       <div class="col-md-8 offset-md-2">
         <div class="card">
-          <% if(post.img) { %>
-            <img src="<%= post.img %>" class="card-img-top" alt="...">
+          <% if (post.img) { %>
+            <img src="data:<%= post.img_mime_type %>;base64,<%= post.img %>" class="card-img-top" alt="...">
           <% } %>
           <div class="card-body">
             <p class="card-text">
@@ -15,14 +15,16 @@
             </p>
             <h1 class="card-title"><%= post.title %></h1>
             <p class="card-text"><%= post.body %></p>
-            <div class="d-flex justify-content-between align-items-center">
-              <div class="btn-group">
-                <a href="/edit/<%= post.id %>" class="btn rounded btn-sm btn-outline-secondary" style="margin-right: 12px;">Edit</a>
-                <form action="/delete/<%= post.id %>?_method=DELETE" method="POST" style="display: inline;">
-                  <button type="submit" class="btn rounded btn-sm btn-outline-danger">Delete</button>
-                </form>
+            <% if (post.author_id === user.id) { %>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <a href="/edit/<%= post.id %>" class="btn rounded btn-sm btn-outline-secondary" style="margin-right: 12px;">Edit</a>
+                  <form action="/delete/<%= post.id %>?_method=DELETE" method="POST" style="display: inline;">
+                    <button type="submit" class="btn rounded btn-sm btn-outline-danger">Delete</button>
+                  </form>
+                </div>
               </div>
-            </div>
+            <% } %>
           </div>
         </div>
       </div>

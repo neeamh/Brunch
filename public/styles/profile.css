@@ -1,0 +1,12 @@
+.profile-page .profile-pic {
+    border-radius: 100px;
+    height: 200px;
+}
+
+.profile-page .header {
+    margin-bottom: 30px;
+}
+
+.profile-page .edit-lnk{
+    text-decoration: none;
+}

@@ -1,18 +1,33 @@
 <%- include('head.ejs')%>
 <body style="background: #0b001a ;">
-    <div class="container-fluid">
-      <header class="d-flex flex-wrap justify-content-center py-3 mb-4">
-        <a href="/" class=" logo d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-          <i class="fa-solid fa-2xl fa-mug-hot icon"></i>
-          <span class="fs-4 fw-bold text">Brunch</span>
-        </a>
-        <ul class="nav nav-pills">
-          <li class="nav-item"><a href="/" class="nav-link link btn-active" aria-current="page">Home</a></li>
-          <li class="nav-item"><a href="/posts" class="nav-link link">Posts</a></li>
-          <li class="nav-item"><a href="/create" class="nav-link link">Create</a></li>
-        </ul>
-      </header>
-    </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="/script/head.js"></script>
-  </body>
+  <div class="container-fluid">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4">
+      <a href="/" class="logo d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+        <i class="fa-solid fa-2xl fa-mug-hot icon"></i>
+        <span class="fs-4 fw-bold text">Brunch</span>
+      </a>
+      <ul class="nav nav-pills">
+        <li class="nav-item"><a href="/" class="nav-link link btn-active" aria-current="page">Home</a></li>
+        <li class="nav-item"><a href="/posts" class="nav-link link">Posts</a></li>
+        <li class="nav-item"><a href="/create" class="nav-link link">Create</a></li>
+        <% if (locals.user) { %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Profile
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/profile">Profile Page</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/logout">Logout</a></li>
+            </ul>
+          </li>
+        <% } else { %>
+          <li class="nav-item"><a href="/login" class="nav-link link">Login</a></li>
+          <li class="nav-item"><a href="/register" class="nav-link link">Register</a></li>
+        <% } %>
+      </ul>
+    </header>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="/script/head.js"></script>
+</body>

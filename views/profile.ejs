@@ -1,0 +1,61 @@
+<%- include('partials/header.ejs') %>
+
+<body class="profile-page">
+    <div class="container mt-5">
+        <div class="row">
+          <div class="header col-md-2">
+            <div class="profile-img">
+              <% if (user.profile_pic) { %>
+                  <img src="data:image/jpeg;base64,<%= user.profile_pic %>" alt="Profile Picture" class="profile-pic">
+                <% } else { %>
+                  <img src="/public/assets/default-profile.png" alt="Default Profile Picture" class="profile-pic">
+                <% } %>
+            </div>
+          </div>
+          <div class="col-md-10">
+            <div class="profile-header d-flex justify-content-between align-items-center">
+              <h2><%= user.username %></h2>
+              <a class="edit-lnk" href="/edit-profile"><button class=" edit-btn btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button></a>
+            </div>
+            <div class="profile-stats d-flex mt-3">
+              <div class="me-4"><strong>0</strong> posts</div>
+              <div class="me-4"><strong>0</strong> followers</div>
+              <div class="me-4"><strong>0</strong> following</div>
+            </div>
+            <div class="profile-bio mt-3">
+              <p>Bio: <%= user.bio || 'Add a bio' %></p>
+            </div>
+          </div>
+        </div>
+        <div class="posts row my-4 heading">
+          <div class="col">
+            <h2 class="title">Your Posts</h2>
+          </div>
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 posts">
+          <% posts.forEach(post => { %>
+            <div class="col">
+              <a href="/posts/<%= post.id %>" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                  <% if (post.img) { %>
+                    <img class="card-image img-fluid rounded-top" src="data:<%= post.img_mime_type %>;base64,<%= post.img %>" alt="...">
+                  <% } %>
+                  <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-truncate"><%= post.title %></h5>
+                    <p class="card-text text-truncate"><%= post.body %></p>
+                    <div class="mt-auto">
+                      <p class="card-text">
+                        <small class="card-time text-body-secondary"><%= post.updated_at %></small>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+</body>
+
+
+<%- include('partials/footer.ejs') %>

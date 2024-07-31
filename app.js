@@ -4,39 +4,68 @@ import multer from "multer";
 import axios from 'axios';
 import methodOverride from "method-override";
 import dotenv from 'dotenv';
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+import pg from 'pg';
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
+import bcrypt from 'bcrypt';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 dotenv.config();
+const app = express();
+const port = 8080;
 
-console.log(process.env)
+// Database connection
+const db = new pg.Client({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+  ssl: false
+});
+db.connect();
+
+const PgSession = connectPgSimple(session);
 
 const FINNHUB_API_KEY = process.env.API_KEY;
-console.log('FINNHUB_API_KEY:', process.env.API_KEY); // Verify the API key
 
-let allPosts = new Map();
-let id_counter = 0;
-
+// Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Set the view engine to ejs
-app.set('view engine', 'ejs');
-app.set('views', (__dirname, 'views'));
-app.use(express.static(__dirname + "/public"));
+app.use(express.static("public"));
 app.use(methodOverride('_method'));
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
+app.use(session({
+  store: new PgSession({
+    pool: db
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // Set secure: true for HTTPS
+}));
+app.use((req, res, next) => {
+  res.locals.user = req.session.userId ? { id: req.session.userId, username: req.session.username } : null;
+  next();
 });
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+
+const checkAuth = (req, res, next) => {
+  if (!req.session.userId) {
+    res.redirect('/login');
+  } else {
+    next();
+  }
+};
+
 
 app.get("/", async (req, res) => {
   try {
@@ -47,7 +76,7 @@ app.get("/", async (req, res) => {
       }
     });
 
-    const popularSymbols = response.data.slice(0, 15).map(stock => stock.symbol); // Get top 10 stocks
+    const popularSymbols = response.data.slice(0, 15).map(stock => stock.symbol);
 
     const stockDataPromises = popularSymbols.map(symbol =>
       axios.get(`https://finnhub.io/api/v1/quote`, {
@@ -65,146 +94,320 @@ app.get("/", async (req, res) => {
       price: response.data.c,
       change: response.data.d
     }));
-    
-    const firstThreeEntries = Array.from(allPosts.entries())
-      .sort((a, b) => b[1].clickCount - a[1].clickCount) // sort by click count
-      .slice(0, 3);
-    const recentPosts = Array.from(allPosts.values()).slice(-10).reverse(); // get the last 10 posts
 
-    res.render('home', { firstThree: firstThreeEntries, recentPosts, stockData });
+    const firstThreeEntries = await db.query('SELECT posts.*, users.username, users.profile_pic, users.img_mime_type FROM posts JOIN users ON posts.author_id = users.id ORDER BY click_count DESC LIMIT 3');
+    const recentPosts = await db.query('SELECT posts.*, users.username, users.profile_pic, users.img_mime_type FROM posts JOIN users ON posts.author_id = users.id ORDER BY created_at DESC LIMIT 10');
+
+    const firstThree = firstThreeEntries.rows.map(post => {
+      if (post.img) {
+        post.img = Buffer.from(post.img).toString('base64');
+      }
+      if (post.profile_pic) {
+        post.profile_pic = Buffer.from(post.profile_pic).toString('base64');
+      }
+      return post;
+    });
+
+    const recent = recentPosts.rows.map(post => {
+      if (post.img) {
+        post.img = Buffer.from(post.img).toString('base64');
+      }
+      if (post.profile_pic) {
+        post.profile_pic = Buffer.from(post.profile_pic).toString('base64');
+      }
+      return post;
+    });
+
+    res.render('home', {
+      firstThree: firstThree,
+      recentPosts: recent,
+      stockData,
+      user: req.session.userId ? { id: req.session.userId, username: req.session.username, profile_pic: req.session.profile_pic } : null
+    });
   } catch (error) {
     console.error("Error fetching stock data:", error);
     res.status(500).send("Error fetching stock data");
   }
 });
 
-
-app.get("/posts", (req, res) => {
-  const sortedPosts = Array.from(allPosts.values()).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-  res.render('posts', { allPages: sortedPosts });
+app.get("/posts", async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT posts.*, users.username, users.profile_pic, users.img_mime_type 
+      FROM posts 
+      JOIN users ON posts.author_id = users.id 
+      ORDER BY posts.created_at DESC
+    `);
+    const posts = result.rows.map(post => {
+      if (post.img) {
+        post.img = Buffer.from(post.img).toString('base64');
+      }
+      if (post.profile_pic) {
+        post.profile_pic = Buffer.from(post.profile_pic).toString('base64');
+      }
+      return post;
+    });
+    res.render('posts', { allPages: posts, user: req.session.userId ? { id: req.session.userId, username: req.session.username } : null });
+  } catch (error) {
+    console.error('Error fetching posts', error.stack);
+    res.status(500).send('Error fetching posts');
+  }
 });
 
-app.get("/create", (req, res) => {
+
+app.get("/create", checkAuth, (req, res) => {
   res.render('create');
 });
 
-app.get("/posts/:id", (req, res) => {
-  const post = allPosts.get(parseInt(req.params.id));
-  if (post) {
-    post.clickCount = (post.clickCount || 0) + 1;  // Increment click count
-    allPosts.set(post.id, post);  // Save the updated post back to the map
-    res.render('postDetail', { post });
-  } else {
-    res.status(404).send('Post not found');
+app.get("/posts/:id", async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM posts WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) return res.status(404).send('Post not found');
+
+    const post = result.rows[0];
+    await db.query('UPDATE posts SET click_count = click_count + 1 WHERE id = $1', [req.params.id]);
+    if (post.img) {
+      post.img = Buffer.from(post.img).toString('base64');
+    }
+    res.render('postDetail', { post, user: req.session.userId ? { id: req.session.userId, username: req.session.username } : null });
+  } catch (error) {
+    console.error('Error fetching post', error.stack);
+    res.status(500).send('Error fetching post');
   }
 });
 
-app.get("/edit/:id", (req, res) => {
-  const post = allPosts.get(parseInt(req.params.id));
-  if (post) {
-    res.render('edit', { post });
-  } else {
-    res.status(404).send('Post not found');
+
+app.get("/edit/:id", checkAuth, async (req, res) => {
+  const result = await db.query('SELECT * FROM posts WHERE id = $1', [req.params.id]);
+  if (result.rows.length === 0) return res.status(404).send('Post not found');
+  
+  const post = result.rows[0];
+  if (post.author_id !== req.session.userId) {
+    return res.status(403).send('You are not authorized to edit this post.');
+  }
+  
+  res.render('edit', { post });
+});
+
+app.patch("/edit/:id", checkAuth, upload.single('img'), async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const existingPost = await db.query('SELECT * FROM posts WHERE id = $1', [id]);
+    if (existingPost.rows.length === 0) return res.status(404).send('Post not found');
+    
+    if (existingPost.rows[0].author_id !== req.session.userId) {
+      return res.status(403).send('You are not authorized to edit this post.');
+    }
+
+    const img = req.file ? req.file.buffer : existingPost.rows[0].img;
+    const imgMimeType = req.file ? req.file.mimetype : existingPost.rows[0].img_mime_type;
+
+    await db.query(
+      'UPDATE posts SET title = $1, body = $2, img = $3, img_mime_type = $4, updated_at = $5 WHERE id = $6',
+      [req.body.title, req.body.body, img, imgMimeType, new Date(), id]
+    );
+    res.redirect("/posts");
+  } catch (error) {
+    console.error('Error updating post', error.stack);
+    res.status(500).send('Error updating post');
   }
 });
 
-app.patch("/edit/:id", upload.single('img'), (req, res) => {
-  const id = parseInt(req.params.id);
-  if (allPosts.has(id)) {
-    const existingPost = allPosts.get(id);
-    const updatedPost = {
-      id: id,
-      title: req.body.title,
-      body: req.body.body,
-      img: req.file ? '/uploads/' + req.file.filename : existingPost.img,
-      updatedAt: new Date().toLocaleString(),
-      clickCount: existingPost.clickCount  // Preserve the click count
-    };
-    allPosts.set(id, updatedPost);
+
+app.delete("/delete/:id", checkAuth, async (req, res) => {
+  const result = await db.query('SELECT * FROM posts WHERE id = $1', [req.params.id]);
+  if (result.rows.length === 0) return res.status(404).send('Post not found');
+
+  const post = result.rows[0];
+  if (post.author_id !== req.session.userId) {
+    return res.status(403).send('You are not authorized to delete this post.');
   }
+
+  await db.query('DELETE FROM posts WHERE id = $1', [req.params.id]);
   res.redirect("/posts");
 });
 
-app.delete("/delete/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  allPosts.delete(id);
-  res.redirect("/posts");
-});
 
 function newPost(req, res, next) {
   if (!req.body.title || !req.body.body) {
     return res.redirect("/create");
   }
-  id_counter++;
   const newPost = {
-    id: id_counter,
+    author_id: req.session.userId,
     title: req.body.title,
     body: req.body.body,
-    img: req.file ? '/uploads/' + req.file.filename : null,
-    updatedAt: new Date().toLocaleString(),
-    clickCount: 0  // Initialize click count
+    img: req.file ? req.file.buffer : null,
+    img_mime_type: req.file ? req.file.mimetype : null,
+    created_at: new Date(),
+    updated_at: new Date(),
+    click_count: 0
   };
-  allPosts.set(id_counter, newPost);
-  next();
+  db.query('INSERT INTO posts (author_id, title, body, img, img_mime_type, created_at, updated_at, click_count) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
+    [newPost.author_id, newPost.title, newPost.body, newPost.img, newPost.img_mime_type, newPost.created_at, newPost.updated_at, newPost.click_count])
+    .then(result => {
+      newPost.id = result.rows[0].id;
+      next();
+    })
+    .catch(error => {
+      console.error("Error creating new post:", error);
+      res.status(500).send("Error creating new post");
+    });
 }
 
-app.post("/submit", upload.single('img'), newPost, (req, res) => {
+app.post("/submit", checkAuth, upload.single('img'), newPost, (req, res) => {
   res.redirect("/posts");
 });
 
 
-// Function to initialize posts 
-// SOLELY FOR TESTING PURPOSES
-//ALL IMAGES ARE IN /public/uploads
-//THIS FUNCTION IS CALLED IN THE SERVER.JS FILE
-//REMEMBER TO DELETE    
-//////////////////////////////////////////////
-export function initializePosts() {
-    const examplePosts = [
-      {
-        title: "Doflamingo",
-        body: "This is an example post about Doflamingo.",
-        img: "/uploads/test1.jpg"
-      },
-      {
-        title: "One Piece",
-        body: "This is an example post about One Piece.",
-        img: "/uploads/test2.jpg"
-      },
-      {
-        title: "Red Dress",
-        body: "This is an example post about a Red Dress.",
-        img: "/uploads/test3.JPG"
-      },
-      {
-        title: "2048",
-        body: "This is an example post about 2048.",
-        img: "/uploads/test4.PNG"
-      },
-      {
-        title: "Anime",
-        body: "This is an example post about Anime.",
-        img: "/uploads/test5.jpg"
-      },
-      {
-        title: "Vegapunk",
-        body: "This is an example post about Vegapunk.",
-        img: "/uploads/test6.PNG"
+// User registration
+app.get('/register', (req, res) => {
+  res.render('register', { user: null });
+});
+
+app.post('/register', async (req, res) => {
+  const { username, email, password } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const defaultProfilePicPath = path.join(__dirname, 'public/assets/default-profile.png');
+    const defaultProfilePic = fs.readFileSync(defaultProfilePicPath);
+
+    const result = await db.query(
+      'INSERT INTO users (username, email, password, profile_pic, img_mime_type) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+      [username, email, hashedPassword, defaultProfilePic, 'image/png']
+    );
+
+    req.session.userId = result.rows[0].id;
+    req.session.username = username;
+    res.redirect('/');
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).send('Error registering user');
+  }
+});
+
+
+// User login
+app.get('/login', (req, res) => {
+  res.render('login', { user: null });
+});
+// User login
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const result = await db.query(
+      'SELECT id, username, password, profile_pic, img_mime_type FROM users WHERE username = $1 OR email = $1',
+      [username]
+    );
+
+    if (result.rows.length > 0) {
+      const user = result.rows[0];
+      const passwordMatch = await bcrypt.compare(password, user.password);
+
+      if (passwordMatch) {
+        req.session.userId = user.id;
+        req.session.username = user.username;
+        req.session.profilePic = user.profile_pic ? `data:${user.profile_pic_mime_type};base64,${user.profile_pic.toString('base64')}` : null;
+        res.redirect('/');
+      } else {
+        res.status(401).send('Invalid username or password');
       }
-    ];
-  
-    examplePosts.forEach(post => {
-      id_counter++;
-      allPosts.set(id_counter, {
-        id: id_counter,
-        title: post.title,
-        body: post.body,
-        img: post.img,
-        updatedAt: new Date().toLocaleString(),
-        clickCount: 0 // Initialize click count
-      });
+    } else {
+      res.status(401).send('Invalid username or password');
+    }
+  } catch (error) {
+    console.error('Error logging in user:', error);
+    res.status(500).send('Error logging in user');
+  }
+});
+
+// Display profile page
+app.get('/profile', checkAuth, async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const userResult = await db.query('SELECT username, email, profile_pic, img_mime_type FROM users WHERE id = $1', [userId]);
+    const postsResult = await db.query('SELECT * FROM posts WHERE author_id = $1 ORDER BY created_at DESC', [userId]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).send('User not found');
+    }
+
+    const user = userResult.rows[0];
+    const posts = postsResult.rows.map(post => {
+      if (post.img) {
+        post.img = Buffer.from(post.img).toString('base64');
+      }
+      return post;
     });
-}
-/////////////////////////////////////////////
+
+    if (user.profile_pic) {
+      user.profile_pic = Buffer.from(user.profile_pic).toString('base64');
+    }
+
+    res.render('profile', {
+      user: user,
+      posts: posts
+    });
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).send('Error fetching user profile');
+  }
+});
+
+// Display edit profile page
+app.get('/edit-profile', checkAuth, async (req, res) => {
+  try {
+    const result = await db.query('SELECT username, email FROM users WHERE id = $1', [req.session.userId]);
+    if (result.rows.length === 0) return res.status(404).send('User not found');
+    res.render('edit-profile', { user: result.rows[0] });
+  } catch (error) {
+    console.error('Error fetching user profile for editing:', error);
+    res.status(500).send('Error fetching user profile for editing');
+  }
+});
+
+// Handle profile update
+app.post('/edit-profile', checkAuth, upload.single('profile_pic'), async (req, res) => {
+  const { username, email, password } = req.body;
+  try {
+    const userId = req.session.userId;
+    let updateQuery = 'UPDATE users SET username = $1, email = $2';
+    const values = [username, email];
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateQuery += ', password = $3';
+      values.push(hashedPassword);
+    }
+
+    if (req.file) {
+      const imgIndex = values.length + 1;
+      updateQuery += `, profile_pic = $${imgIndex}`;
+      values.push(req.file.buffer);
+    }
+
+    updateQuery += ' WHERE id = $' + (values.length + 1);
+    values.push(userId);
+
+    await db.query(updateQuery, values);
+    req.session.username = username;
+    res.redirect('/profile');
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    res.status(500).send('Error updating user profile');
+  }
+});
+
+
+// User logout
+app.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.redirect('/');
+    }
+
+    res.clearCookie('connect.sid'); // Assuming 'connect.sid' is the cookie name used by express-session
+    res.redirect('/');
+  });
+});
 
 export default app;

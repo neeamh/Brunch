@@ -4,7 +4,7 @@ $(document).ready(function() {
   // Function to update active class based on the current URL
   function setActiveNavLink() {
     const currentPath = window.location.pathname;
-    $('.nav-link').each(function() {
+    $('.link').each(function() {
       const linkPath = $(this).attr('href');
       if (currentPath === linkPath) {
         $(this).addClass('btn-active');
@@ -18,8 +18,8 @@ $(document).ready(function() {
   setActiveNavLink();
 
   // Update active class on link click
-  $('.nav-link').click(function() {
-    $('.nav-link').removeClass('btn-active');
+  $('.link').click(function() {
+    $('.link').removeClass('btn-active');
     $(this).addClass('btn-active');
   });
 });
