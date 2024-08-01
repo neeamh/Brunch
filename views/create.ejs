@@ -7,7 +7,7 @@
                 <h1>Tell us your story!</h1>
             </div>
             <div class="row">
-                <form action="/submit" method="POST" enctype="multipart/form-data">
+                <form action="/posts/submit" method="POST" enctype="multipart/form-data">
                     <div class="custom-file-input">
                         <input class="input file" type="file" name="img" id="img" style="display: none;">
                         <label for="img" class="custom-file-label">Upload Image</label>
@@ -21,7 +21,10 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-
+    <%- include("partials/boot_script_cdn.ejs") %>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <%- include("partials/boot_script_cdn.ejs") %>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </body>
 </html>
 

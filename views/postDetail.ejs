@@ -6,30 +6,39 @@
     <div class="row">
       <div class="col-md-8 offset-md-2">
         <div class="card">
-          <% if (post.img) { %>
+          <% if(post.img) { %>
             <img src="data:<%= post.img_mime_type %>;base64,<%= post.img %>" class="card-img-top" alt="...">
           <% } %>
           <div class="card-body">
             <p class="card-text">
-              <small class="text-muted">Last updated: <%= post.updatedAt %></small>
+              <small class="text-muted">Last updated: <%= post.updatedat %></small>
             </p>
             <h1 class="card-title"><%= post.title %></h1>
             <p class="card-text"><%= post.body %></p>
-            <% if (post.author_id === user.id) { %>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <a href="/edit/<%= post.id %>" class="btn rounded btn-sm btn-outline-secondary" style="margin-right: 12px;">Edit</a>
-                  <form action="/delete/<%= post.id %>?_method=DELETE" method="POST" style="display: inline;">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <% if (user && user.id === post.author_id) { %>
+                  <a href="/posts/edit/<%= post.id %>" class="btn rounded btn-sm btn-outline-secondary" style="margin-right: 12px;">Edit</a>
+                  <form action="/posts/delete/<%= post.id %>?_method=DELETE" method="POST" style="display: inline;">
                     <button type="submit" class="btn rounded btn-sm btn-outline-danger">Delete</button>
                   </form>
-                </div>
+                <% } %>
               </div>
-            <% } %>
+            </div>
+            <div class="d-flex align-items-center mt-3">
+              <% if (post.profile_pic) { %>
+                <img src="data:<%= post.profile_pic_mime_type %>;base64,<%= post.profile_pic %>" alt="Profile Picture" class="rounded-circle" style="width: 50px; height: 50px; margin-right: 15px;">
+              <% } %>
+              <span class="h5"><%= post.username %></span>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <%- include("partials/boot_script_cdn.ejs") %>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </body>
 </html>
 <%- include("partials/footer.ejs") %>

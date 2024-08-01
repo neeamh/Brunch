@@ -1,14 +1,7 @@
-import http from "http";
-import app from "./app.js";
+import app from './app.js';
 
-// //REMEMBER TO DELETE WHEN DONE TESTING////////////////////////////
-// import { initializePosts } from "./app.js";                   ///
-// initializePosts(); // Initialize posts when the server starts ///
-// ////////////////////////////////////////////////////////////////
-const port = 8080;
+const port = process.env.PORT || 8080;
 
-const server = http.createServer(app);
-
-server.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });

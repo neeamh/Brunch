@@ -15,7 +15,7 @@
           <div class="col-md-10">
             <div class="profile-header d-flex justify-content-between align-items-center">
               <h2><%= user.username %></h2>
-              <a class="edit-lnk" href="/edit-profile"><button class=" edit-btn btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button></a>
+              <a class="edit-lnk" href="/auth/edit-profile"><button class=" edit-btn btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button></a>
             </div>
             <div class="profile-stats d-flex mt-3">
               <div class="me-4"><strong>0</strong> posts</div>
@@ -55,6 +55,8 @@
           <% }) %>
         </div>
       </div>
+      <%- include("partials/boot_script_cdn.ejs") %>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </body>
 
 
