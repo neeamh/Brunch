@@ -32,6 +32,12 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  res.locals.currentUser = req.session.userId ? { id: req.session.userId, username: req.session.username } : null;
+  next();
+});
+
+
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 

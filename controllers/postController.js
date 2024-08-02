@@ -28,7 +28,7 @@ const getPostById = async (req, res) => {
   try {
     const postId = parseInt(req.params.id, 10); // Ensure the post ID is an integer
     const result = await db.query(
-      `SELECT posts.*, users.username, users.profile_pic, users.img_mime_type
+      `SELECT posts.*, users.username, users.profile_pic, users.img_mime_type AS profile_pic_mime_type
        FROM posts
        JOIN users ON posts.author_id = users.id
        WHERE posts.id = $1`, [postId]);
@@ -42,7 +42,10 @@ const getPostById = async (req, res) => {
     if (post.profile_pic) {
       post.profile_pic = Buffer.from(post.profile_pic).toString('base64');
     }
-    res.render('postDetail', { post, userLikes: [] }); // Pass userLikes if needed
+    res.render('postDetail', {
+      post,
+      user: req.session.userId ? { id: req.session.userId, username: req.session.username } : null
+    });
   } catch (error) {
     console.error('Error fetching post', error.stack);
     res.status(500).send('Error fetching post');

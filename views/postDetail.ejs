@@ -10,8 +10,14 @@
             <img src="data:<%= post.img_mime_type %>;base64,<%= post.img %>" class="card-img-top" alt="...">
           <% } %>
           <div class="card-body">
+            <div class="d-flex align-items-center mt-3">
+              <% if (post.profile_pic) { %>
+                <img src="data:<%= post.profile_pic_mime_type %>;base64,<%= post.profile_pic %>" alt="Profile Picture" class="rounded-circle" style="width: 50px; height: 50px; margin-right: 15px;">
+              <% } %>
+              <a href="/auth/profile/<%= post.username %>" style="text-decoration: none;" class="h5"><%= post.username %></a>
+            </div>
             <p class="card-text">
-              <small class="text-muted">Last updated: <%= post.updatedat %></small>
+              <small class="text-muted">Last updated: <%= new Date(post.updated_at).toLocaleString() %></small>
             </p>
             <h1 class="card-title"><%= post.title %></h1>
             <p class="card-text"><%= post.body %></p>
@@ -24,12 +30,6 @@
                   </form>
                 <% } %>
               </div>
-            </div>
-            <div class="d-flex align-items-center mt-3">
-              <% if (post.profile_pic) { %>
-                <img src="data:<%= post.profile_pic_mime_type %>;base64,<%= post.profile_pic %>" alt="Profile Picture" class="rounded-circle" style="width: 50px; height: 50px; margin-right: 15px;">
-              <% } %>
-              <span class="h5"><%= post.username %></span>
             </div>
           </div>
         </div>

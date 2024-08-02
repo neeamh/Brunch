@@ -15,10 +15,12 @@
           <div class="col-md-10">
             <div class="profile-header d-flex justify-content-between align-items-center">
               <h2><%= user.username %></h2>
-              <a class="edit-lnk" href="/auth/edit-profile"><button class=" edit-btn btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button></a>
+              <% if (currentUser && currentUser.username === user.username) { %>
+                <a class="edit-lnk" href="/auth/edit-profile"><button class=" edit-btn btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button></a>
+              <% } %>
             </div>
             <div class="profile-stats d-flex mt-3">
-              <div class="me-4"><strong>0</strong> posts</div>
+              <div class="me-4"><strong><%= posts.length %></strong> posts</div>
               <div class="me-4"><strong>0</strong> followers</div>
               <div class="me-4"><strong>0</strong> following</div>
             </div>
@@ -29,7 +31,7 @@
         </div>
         <div class="posts row my-4 heading">
           <div class="col">
-            <h2 class="title">Your Posts</h2>
+            <h2 class="title">Posts</h2>
           </div>
         </div>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 posts">
@@ -45,7 +47,7 @@
                     <p class="card-text text-truncate"><%= post.body %></p>
                     <div class="mt-auto">
                       <p class="card-text">
-                        <small class="card-time text-body-secondary"><%= post.updated_at %></small>
+                        <small class="card-time text-body-secondary"><%= new Date(post.updated_at).toLocaleString() %></small>
                       </p>
                     </div>
                   </div>
@@ -58,6 +60,5 @@
       <%- include("partials/boot_script_cdn.ejs") %>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </body>
-
 
 <%- include('partials/footer.ejs') %>
